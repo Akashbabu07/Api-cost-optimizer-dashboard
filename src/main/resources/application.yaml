@@ -1,0 +1,51 @@
+server:
+  port: ${PORT:8085}
+
+spring:
+  application:
+    name: dashboard-service
+
+  data:
+    redis:
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}
+      password: ${REDIS_PASSWORD}
+
+  cloud:
+    openfeign:
+      circuitbreaker:
+        enabled: true
+
+feign:
+  client:
+    config:
+      default:
+        connectTimeout: 10000
+        readTimeout: 15000
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      analytics-service:
+        slidingWindowSize: 10
+        failureRateThreshold: 50
+        waitDurationInOpenState: 10s
+
+logging:
+  level:
+    root: INFO
+    com.example.dashboard: DEBUG
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+
+  endpoint:
+    health:
+      show-details: always
+
+analytics:
+  service:
+    url: ${ANALYTICS_SERVICE_URL:http://localhost:8083}
